@@ -1,10 +1,30 @@
+import React from 'react';
+import { Image } from 'react-native';
+
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createBottomTabNavigator } from 'react-navigation-tabs';
+
+import { createStackNavigator } from 'react-navigation-stack';
+
+import logo from '~/assets/images/logo-horizontal.png';
 
 import SignIn from './pages/SignIn';
 
 import Checkins from './pages/Checkins';
 import Support from './pages/Support';
+
+const Tab = createBottomTabNavigator(
+  {
+    Checkins,
+    Support,
+  },
+  {
+    tabBarOptions: {
+      keyboardHidesTabBar: true,
+      activeTintColor: '#EE4E62',
+    },
+  }
+);
 
 export default (signedIn = false) =>
   createAppContainer(
@@ -13,15 +33,17 @@ export default (signedIn = false) =>
         Sign: createSwitchNavigator({
           SignIn,
         }),
-        App: createBottomTabNavigator(
+        App: createStackNavigator(
           {
-            Checkins,
-            Support,
+            Home: {
+              screen: Tab,
+            },
           },
           {
-            tabBarOptions: {
-              keyboardHidesTabBar: true,
-              activeTintColor: '#EE4E62',
+            headerLayoutPreset: 'center',
+            headerBackTitleVisible: false,
+            defaultNavigationOptions: {
+              headerTitle: <Image source={logo} />,
             },
           }
         ),
