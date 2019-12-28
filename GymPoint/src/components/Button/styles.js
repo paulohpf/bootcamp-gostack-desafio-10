@@ -9,6 +9,7 @@ export const Container = styled(RectButton)`
 
   align-items: center;
   justify-content: center;
+  opacity: ${props => (props.loading ? 0.7 : 1)};
 `;
 
 export const Text = styled.Text`

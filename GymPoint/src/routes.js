@@ -11,12 +11,13 @@ import logo from '~/assets/images/logo-horizontal.png';
 import SignIn from './pages/SignIn';
 
 import Checkins from './pages/Checkins';
-import Support from './pages/Support';
+import Supports from './pages/Supports';
+import NewSupport from './pages/NewSupport';
 
 const Tab = createBottomTabNavigator(
   {
     Checkins,
-    Support,
+    Supports,
   },
   {
     tabBarOptions: {
@@ -38,6 +39,7 @@ export default (signedIn = false) =>
             Home: {
               screen: Tab,
             },
+            NewSupport,
           },
           {
             headerLayoutPreset: 'center',

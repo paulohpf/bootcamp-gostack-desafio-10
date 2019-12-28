@@ -1,16 +1,22 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+
 import { Alert } from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import api from '~/services/api';
 
 import { Container, AddButton, List } from './styles';
-import Checkin from '~/components/Checkin';
 
-export default function Checkins() {
-  const [checkins, setCheckin] = useState([]);
+import Support from '~/components/Support';
+
+export default function Supports(props) {
+  console.tron.log(props);
+
+  const [support, setSupport] = useState([]);
   const [pagination, setPagination] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(false);
   const [page, setPage] = useState(1);
@@ -20,20 +26,22 @@ export default function Checkins() {
   useEffect(() => {
     const getData = async () => {
       try {
-        const response = await api.get(`students/${studentId}/checkins`, {
+        const response = await api.get(`/students/${studentId}/help-orders`, {
           params: { page },
         });
 
         const { rows, ..._pagination } = response.data;
 
-        setCheckin(page >= 2 ? [...checkins, ...rows] : rows);
+        setSupport(page >= 2 ? [...support, ...rows] : rows);
         setPagination(_pagination);
 
         setLoading(false);
         setRefresh(false);
       } catch (err) {
-        Alert.alert('Ocorreu um erro', 'Não foi possível baixar os Check-ins');
-
+        Alert.alert(
+          'Ocorreu um erro',
+          'Não foi possível baixar os pedidos de auxílio'
+        );
         setLoading(false);
         setRefresh(false);
       }
@@ -42,21 +50,6 @@ export default function Checkins() {
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, refresh]);
-
-  const handleNewCheckIn = async () => {
-    try {
-      setLoading(true);
-      await api.post(`students/${studentId}/checkins`);
-
-      const responseCheckins = await api.get(`students/${studentId}/checkins`);
-
-      setCheckin(responseCheckins.data);
-      setLoading(false);
-    } catch (error) {
-      Alert.alert('Ocorreu um erro', 'Não foi possível realizar o Check-in');
-      setLoading(false);
-    }
-  };
 
   const loadMore = () => {
     if (page < pagination.totalPages) {
@@ -68,31 +61,38 @@ export default function Checkins() {
 
   const refreshList = () => {
     setPage(1);
-    setCheckin([]);
+    setSupport([]);
     setRefresh(true);
+  };
+
+  const handleNavigate = () => {
+    const { navigation } = props;
+
+    navigation.navigate('NewSupport');
   };
 
   return (
     <Container>
-      <AddButton onPress={handleNewCheckIn} loading={loading}>
-        Novo check-in
+      <AddButton loading={loading} onPress={handleNavigate}>
+        Novo pedido de auxílio
       </AddButton>
+
       <List
-        data={checkins}
+        data={support}
         onRefresh={refreshList}
         refreshing={refresh}
         onEndReachedThreshold={0.2}
         onEndReached={loadMore}
         keyExtractor={item => String(item.id)}
-        renderItem={({ item }) => <Checkin data={item} />}
+        renderItem={({ item }) => <Support data={item} />}
       />
     </Container>
   );
 }
 
-Checkins.navigationOptions = {
-  tabBarLabel: 'Check-ins',
+Supports.navigationOptions = {
+  tabBarLabel: 'Pedir Ajuda',
   tabBarIcon: ({ tintColor }) => (
-    <Icon name="edit-location" size={20} color={tintColor} />
+    <Icon name="live-help" size={20} color={tintColor} />
   ),
 };
