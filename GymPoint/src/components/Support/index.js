@@ -1,23 +1,29 @@
-import React, { useMemo } from 'react';
-import { View } from 'react-native';
+import React from 'react';
 
 import { parseISO, formatRelative } from 'date-fns';
 import ptbr from 'date-fns/locale/pt-BR';
 
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Container, Header, Status, Data, Question } from './styles';
 
-export default function Support({ data }) {
-  console.tron.log(data);
-
+export default function Support({ data, onPress }) {
   return (
-    <Container>
-      <Header>
-        <Status status={data.answer}>
-          {data.answer ? 'Respondido' : 'Sem resposta'}
-        </Status>
-        <Data>Hoje às 14h</Data>
-      </Header>
-      <Question>{data.question}</Question>
-    </Container>
+    <TouchableOpacity onPress={onPress}>
+      <Container>
+        <Header>
+          <Status status={data.answer}>
+            {data.answer ? 'Respondido' : 'Sem resposta'}
+          </Status>
+          <Data>
+            {data.answer_at &&
+              formatRelative(parseISO(data.answer_at), new Date(), {
+                locale: ptbr,
+                addSuffix: true,
+              })}
+          </Data>
+        </Header>
+        <Question>{data.question}</Question>
+      </Container>
+    </TouchableOpacity>
   );
 }

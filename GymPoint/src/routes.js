@@ -13,6 +13,7 @@ import SignIn from './pages/SignIn';
 import Checkins from './pages/Checkins';
 import Supports from './pages/Supports';
 import NewSupport from './pages/NewSupport';
+import SupportAnswer from './pages/SupportAnswer';
 
 const Tab = createBottomTabNavigator(
   {
@@ -40,6 +41,7 @@ export default (signedIn = false) =>
               screen: Tab,
             },
             NewSupport,
+            SupportAnswer,
           },
           {
             headerLayoutPreset: 'center',

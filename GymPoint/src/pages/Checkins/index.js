@@ -17,31 +17,31 @@ export default function Checkins() {
 
   const studentId = useSelector(state => state.auth.studentId);
 
+  const getData = async (nextPage = 1) => {
+    try {
+      const response = await api.get(`students/${studentId}/checkins`, {
+        params: { page: nextPage },
+      });
+
+      const { rows, ..._pagination } = response.data;
+
+      setCheckin(nextPage >= 2 ? [...checkins, ...rows] : rows);
+      setPagination(_pagination);
+
+      setLoading(false);
+      setRefresh(false);
+    } catch (err) {
+      Alert.alert('Ocorreu um erro', 'Não foi possível baixar os Check-ins');
+
+      setLoading(false);
+      setRefresh(false);
+    }
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await api.get(`students/${studentId}/checkins`, {
-          params: { page },
-        });
-
-        const { rows, ..._pagination } = response.data;
-
-        setCheckin(page >= 2 ? [...checkins, ...rows] : rows);
-        setPagination(_pagination);
-
-        setLoading(false);
-        setRefresh(false);
-      } catch (err) {
-        Alert.alert('Ocorreu um erro', 'Não foi possível baixar os Check-ins');
-
-        setLoading(false);
-        setRefresh(false);
-      }
-    };
-
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, refresh]);
+  }, []);
 
   const handleNewCheckIn = async () => {
     try {
@@ -63,13 +63,16 @@ export default function Checkins() {
       const nextPage = page + 1;
 
       setPage(nextPage);
+      getData(nextPage);
     }
   };
 
   const refreshList = () => {
+    setRefresh(true);
     setPage(1);
     setCheckin([]);
-    setRefresh(true);
+
+    getData();
   };
 
   return (

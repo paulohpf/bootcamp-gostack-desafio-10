@@ -12,8 +12,6 @@ import { Container, AddButton, List } from './styles';
 import Support from '~/components/Support';
 
 export default function Supports(props) {
-  console.tron.log(props);
-
   const [support, setSupport] = useState([]);
   const [pagination, setPagination] = useState({});
 
@@ -23,52 +21,63 @@ export default function Supports(props) {
 
   const studentId = useSelector(state => state.auth.studentId);
 
+  const getData = async (nextPage = 1) => {
+    try {
+      const response = await api.get(`/students/${studentId}/help-orders`, {
+        params: { page: nextPage },
+      });
+
+      const { rows, ..._pagination } = response.data;
+
+      setSupport(nextPage >= 2 ? [...support, ...rows] : rows);
+      setPagination(_pagination);
+
+      setLoading(false);
+      setRefresh(false);
+    } catch (err) {
+      Alert.alert(
+        'Ocorreu um erro',
+        'Não foi possível baixar os pedidos de auxílio'
+      );
+      setLoading(false);
+      setRefresh(false);
+    }
+  };
+
   useEffect(() => {
-    const getData = async () => {
-      try {
-        const response = await api.get(`/students/${studentId}/help-orders`, {
-          params: { page },
-        });
-
-        const { rows, ..._pagination } = response.data;
-
-        setSupport(page >= 2 ? [...support, ...rows] : rows);
-        setPagination(_pagination);
-
-        setLoading(false);
-        setRefresh(false);
-      } catch (err) {
-        Alert.alert(
-          'Ocorreu um erro',
-          'Não foi possível baixar os pedidos de auxílio'
-        );
-        setLoading(false);
-        setRefresh(false);
-      }
-    };
-
     getData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, refresh]);
+  }, []);
 
   const loadMore = () => {
     if (page < pagination.totalPages) {
       const nextPage = page + 1;
 
       setPage(nextPage);
+      getData(nextPage);
     }
   };
 
   const refreshList = () => {
+    setRefresh(true);
     setPage(1);
     setSupport([]);
-    setRefresh(true);
+
+    getData();
   };
 
   const handleNavigate = () => {
     const { navigation } = props;
 
     navigation.navigate('NewSupport');
+  };
+
+  const handleOnPress = supportId => {
+    const { navigation } = props;
+
+    navigation.navigate('SupportAnswer', {
+      supportId,
+    });
   };
 
   return (
@@ -84,7 +93,14 @@ export default function Supports(props) {
         onEndReachedThreshold={0.2}
         onEndReached={loadMore}
         keyExtractor={item => String(item.id)}
-        renderItem={({ item }) => <Support data={item} />}
+        renderItem={({ item }) => (
+          <Support
+            data={item}
+            onPress={() => {
+              handleOnPress(item.id);
+            }}
+          />
+        )}
       />
     </Container>
   );
