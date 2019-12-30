@@ -48,12 +48,13 @@ export default function Checkins() {
       setLoading(true);
       await api.post(`students/${studentId}/checkins`);
 
-      const responseCheckins = await api.get(`students/${studentId}/checkins`);
+      getData();
+    } catch (err) {
+      Alert.alert(
+        'Ocorreu um erro',
+        'Não foi possível realizar o Check-in, verifique a sua matrícula'
+      );
 
-      setCheckin(responseCheckins.data);
-      setLoading(false);
-    } catch (error) {
-      Alert.alert('Ocorreu um erro', 'Não foi possível realizar o Check-in');
       setLoading(false);
     }
   };

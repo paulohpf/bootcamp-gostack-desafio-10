@@ -6,7 +6,7 @@ export default reducers => {
     {
       key: 'gympointphpf',
       storage: AsyncStorage,
-      whitelist: ['auth'],
+      whitelist: [],
     },
     reducers
   );
