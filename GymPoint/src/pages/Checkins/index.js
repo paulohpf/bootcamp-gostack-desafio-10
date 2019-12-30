@@ -48,6 +48,8 @@ export default function Checkins() {
       setLoading(true);
       await api.post(`students/${studentId}/checkins`);
 
+      Alert.alert('Check-in realizado', 'O seu check-in foi realizado');
+
       getData();
     } catch (err) {
       Alert.alert(

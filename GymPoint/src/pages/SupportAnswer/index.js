@@ -26,11 +26,9 @@ export default function SupportAnswer({ navigation }) {
 
   useEffect(() => {
     const getData = async () => {
-      const response = await api.get(`/help-orders/${supportId}`, {
+      const response = await api.get(`/students/help-orders/${supportId}`, {
         params: { id: supportId },
       });
-
-      console.tron.log(response);
 
       setSupport(response.data);
       setLoading(false);
